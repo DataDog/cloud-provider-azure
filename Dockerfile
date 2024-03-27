@@ -14,21 +14,33 @@
 
 # syntax=docker/dockerfile:1
 
-FROM --platform=linux/amd64 golang:1.21-bullseye@sha256:3b4ac7623c123263662ec6c62ef7b97a1e47b8c9e03de9e631651b293f5b8e41 AS builder
+################################################################################
+##                               BUILD ARGS                                   ##
+################################################################################
+# This build arg allows the specification of a custom Golang image.
+ARG GOLANG_IMAGE=golang:1.21.5
+
+# Base docker image (like distroless)
+ARG BASE_IMAGE
+
+FROM ${GOLANG_IMAGE} AS builder
 
 ARG ENABLE_GIT_COMMAND=true
-ARG ARCH=amd64
+ARG TARGETOS
+ARG TARGETARCH
+ARG VERSION
 
 WORKDIR /go/src/sigs.k8s.io/cloud-provider-azure
 COPY . .
 
 # Cache the go build into the the Go's compiler cache folder so we take benefits of compiler caching across docker build calls
 RUN --mount=type=cache,target=/root/.cache/go-build \
-    go build ./cmd/cloud-controller-manager
+    GO111MODULE=on CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+    -trimpath \
+    -ldflags="-w -s -X k8s.io/component-base/version.gitVersion=$VERSION" \
+    -o=azure-cloud-controller-manager \
+    ./cmd/cloud-controller-manager
 
-RUN --mount=type=cache,target=/root/.cache/go-build \
-     make bin/azure-cloud-controller-manager ENABLE_GIT_COMMAND=${ENABLE_GIT_COMMAND} ARCH=${ARCH}
-
-FROM gcr.io/distroless/static
-COPY --from=builder /go/src/sigs.k8s.io/cloud-provider-azure/bin/azure-cloud-controller-manager /usr/local/bin/cloud-controller-manager
-ENTRYPOINT [ "/usr/local/bin/cloud-controller-manager" ]
+FROM ${BASE_IMAGE}
+COPY --from=builder /go/src/sigs.k8s.io/cloud-provider-azure/azure-cloud-controller-manager /bin/azure-cloud-controller-manager
+ENTRYPOINT [ "/bin/azure-cloud-controller-manager" ]
