@@ -36,17 +36,11 @@ COPY cmd/ cmd/
 COPY pkg/ pkg/
 COPY vendor/ vendor/
 
-<<<<<<< HEAD
-# Cache the go build into the the Go's compiler cache folder so we take benefits of compiler caching across docker build calls
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    go build ./cmd/cloud-controller-manager
-=======
 RUN GO111MODULE=on CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
     -trimpath \
     -ldflags="-w -s -X k8s.io/component-base/version.gitVersion=$VERSION" \
     -o=azure-cloud-controller-manager \
     ./cmd/cloud-controller-manager
->>>>>>> 89e591f85 (add dd config)
 
 FROM ${BASE_IMAGE}
 COPY --from=builder /go/src/sigs.k8s.io/cloud-provider-azure/azure-cloud-controller-manager /bin/azure-cloud-controller-manager
