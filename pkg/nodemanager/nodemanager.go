@@ -173,6 +173,7 @@ func NewCloudNodeController(
 		UpdateFunc: func(oldObj, newObj interface{}) { cnc.UpdateCloudNode(context.TODO(), oldObj, newObj) },
 	})
 
+	klog.V(2).Infof("CloudNodeController initialized for nodeName %s", cnc.nodeName)
 	return cnc
 }
 
@@ -216,6 +217,7 @@ func (cnc *CloudNodeController) UpdateNodeStatus(ctx context.Context) {
 
 // reconcileNodeLabels reconciles node labels transitioning from beta to GA
 func (cnc *CloudNodeController) reconcileNodeLabels(node *v1.Node) error {
+	klog.V(2).Infof("reconcileNodeLabels called for node %v", node.Name)
 	if node.Labels == nil {
 		// Nothing to reconcile.
 		return nil
@@ -256,6 +258,7 @@ func (cnc *CloudNodeController) reconcileNodeLabels(node *v1.Node) error {
 
 // UpdateNodeAddress updates the nodeAddress of a single node
 func (cnc *CloudNodeController) updateNodeAddress(ctx context.Context, node *v1.Node) error {
+	klog.V(2).Infof("updateNodeAddress called for node %v", node.Name)
 	// Do not process nodes that are still tainted
 	cloudTaint := GetCloudTaint(node.Spec.Taints)
 	if cloudTaint != nil {
@@ -328,6 +331,7 @@ type nodeModifier func(*v1.Node)
 // UpdateCloudNode handles node update event.
 func (cnc *CloudNodeController) UpdateCloudNode(ctx context.Context, _, newObj interface{}) {
 	node, ok := newObj.(*v1.Node)
+	klog.V(2).Infof("UpdateCloudNode called for node %v", node.Name)
 	if !ok {
 		utilruntime.HandleError(fmt.Errorf("unexpected object type: %v", newObj))
 		return
@@ -351,6 +355,7 @@ func (cnc *CloudNodeController) UpdateCloudNode(ctx context.Context, _, newObj i
 // AddCloudNode handles initializing new nodes registered with the cloud taint.
 func (cnc *CloudNodeController) AddCloudNode(ctx context.Context, obj interface{}) {
 	node := obj.(*v1.Node)
+	klog.V(2).Infof("AddCloudNode called for node %v", node.Name)
 
 	// Skip other nodes other than cnc.nodeName.
 	if !strings.EqualFold(cnc.nodeName, node.Name) {
