@@ -335,6 +335,7 @@ func (cnc *CloudNodeController) UpdateCloudNode(ctx context.Context, _, newObj i
 
 	// Skip other nodes other than cnc.nodeName.
 	if !strings.EqualFold(cnc.nodeName, node.Name) {
+		klog.Info("Node name strings not equal in UpdateCloudNode", cnc.nodeName, node.Name)
 		return
 	}
 
@@ -353,6 +354,7 @@ func (cnc *CloudNodeController) AddCloudNode(ctx context.Context, obj interface{
 
 	// Skip other nodes other than cnc.nodeName.
 	if !strings.EqualFold(cnc.nodeName, node.Name) {
+		klog.Info("Node name strings not equal in AddCloudNode", cnc.nodeName, node.Name)
 		return
 	}
 
@@ -371,6 +373,7 @@ func (cnc *CloudNodeController) initializeNode(ctx context.Context, node *v1.Nod
 	curNode, err := cnc.kubeClient.CoreV1().Nodes().Get(ctx, node.Name, metav1.GetOptions{})
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("failed to get node %s: %w", node.Name, err))
+		klog.Info("Failed to get node in initializeNode", node.Name)
 		return
 	}
 
@@ -378,6 +381,7 @@ func (cnc *CloudNodeController) initializeNode(ctx context.Context, node *v1.Nod
 	if cloudTaint == nil {
 		// Node object received from event had the cloud taint but was outdated,
 		// the node has actually already been initialized.
+		klog.Info("Cloud taint is nil", node.Name)
 		return
 	}
 
@@ -393,6 +397,7 @@ func (cnc *CloudNodeController) initializeNode(ctx context.Context, node *v1.Nod
 
 	var nodeModifiers []nodeModifier
 	err = clientretry.OnError(UpdateNodeSpecBackoff, func(err error) bool {
+		klog.Error("failed to set node: %s providerID: %w", node.Name, err)
 		return err != nil && strings.HasPrefix(err.Error(), "failed to set node provider id")
 	}, func() error {
 		nodeModifiers, err = cnc.getNodeModifiersFromCloudProvider(ctx, curNode)
@@ -400,6 +405,7 @@ func (cnc *CloudNodeController) initializeNode(ctx context.Context, node *v1.Nod
 	})
 	if err != nil {
 		// Instead of just logging the error, panic and node manager can restart
+		klog.Error("failed to init node: %s, err: %w", node.Name, err)
 		utilruntime.Must(fmt.Errorf("failed to initialize node %s at cloudprovider: %w", node.Name, err))
 		return
 	}
