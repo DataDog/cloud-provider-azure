@@ -181,6 +181,9 @@ func (o *CloudControllerManagerOptions) ApplyTo(
 	if err = o.NodeIPAMController.ApplyTo(&c.NodeIPAMControllerConfig); err != nil {
 		return err
 	}
+	if err = o.NodeController.ApplyTo(&c.ComponentConfig.NodeController); err != nil {
+		return err
+	}
 	if err = o.SecureServing.ApplyTo(&c.SecureServing, &c.LoopbackClientConfig); err != nil {
 		return err
 	}
