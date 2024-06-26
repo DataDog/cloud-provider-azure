@@ -99,7 +99,7 @@ func NewCloudControllerManagerOptions() (*CloudControllerManagerOptions, error) 
 		NodeIPAMController: defaultNodeIPAMControllerOptions(),
 		NodeController: &cpoptions.NodeControllerOptions{
 			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
-				ConcurrentNodeSyncs: 1,
+				ConcurrentNodeSyncs: int32(2),
 			},
 		},
 		SecureServing:             apiserveroptions.NewSecureServingOptions().WithLoopback(),

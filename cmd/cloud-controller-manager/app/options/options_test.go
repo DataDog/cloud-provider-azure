@@ -105,7 +105,7 @@ func TestDefaultFlags(t *testing.T) {
 		},
 		NodeController: &cpoptions.NodeControllerOptions{
 			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
-				ConcurrentNodeSyncs: 1,
+				ConcurrentNodeSyncs: int32(2),
 			},
 		},
 		SecureServing: (&apiserveroptions.SecureServingOptions{
@@ -255,7 +255,7 @@ func TestAddFlags(t *testing.T) {
 		},
 		NodeController: &cpoptions.NodeControllerOptions{
 			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
-				ConcurrentNodeSyncs: 1,
+				ConcurrentNodeSyncs: int32(2),
 			},
 		},
 		SecureServing: (&apiserveroptions.SecureServingOptions{

@@ -188,6 +188,7 @@ func (cnc *CloudNodeController) Run(stopCh <-chan struct{}, controllerManagerMet
 	// These workers initialize the nodes added to the cluster,
 	// those that are Tainted with TaintExternalCloudProvider.
 	for i := int32(0); i < cnc.workerCount; i++ {
+		klog.V(2).Infof("Starting cloud node controller worker %d", i)
 		go wait.Until(cnc.runWorker, time.Second, stopCh)
 	}
 
@@ -198,6 +199,7 @@ func (cnc *CloudNodeController) Run(stopCh <-chan struct{}, controllerManagerMet
 // processNextWorkItem function in order to read and process a message on the
 // workqueue.
 func (cnc *CloudNodeController) runWorker() {
+	klog.V(2).Info("Running cloud node controller worker")
 	for cnc.processNextWorkItem() {
 	}
 }
@@ -207,9 +209,11 @@ func (cnc *CloudNodeController) runWorker() {
 func (cnc *CloudNodeController) processNextWorkItem() bool {
 	obj, shutdown := cnc.workqueue.Get()
 	if shutdown {
+		klog.V(2).Info("Shutting down cloud node controller worker")
 		return false
 	}
 
+	klog.V(2).Info("Processing work item")
 	// We wrap this block in a func so we can defer cnc.workqueue.Done.
 	err := func(obj interface{}) error {
 		defer cnc.workqueue.Done(obj)
@@ -224,6 +228,7 @@ func (cnc *CloudNodeController) processNextWorkItem() bool {
 
 		// Run the syncHandler, passing it the key of the
 		// Node resource to be synced.
+		klog.V(2).Infof("Running sync handler for key %s", key)
 		if err := cnc.syncHandler(key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
 			cnc.workqueue.AddRateLimited(key)
@@ -248,10 +253,11 @@ func (cnc *CloudNodeController) processNextWorkItem() bool {
 func (cnc *CloudNodeController) syncHandler(key string) error {
 	_, name, err := cache.SplitMetaNamespaceKey(key)
 	if err != nil {
+		klog.Errorf("Error splitting meta namespace key: %v", err)
 		utilruntime.HandleError(fmt.Errorf("invalid resource key: %s", key))
 		return nil
 	}
-
+	klog.V(2).Infof("Running syncing node %s", name)
 	return cnc.syncNode(context.TODO(), name)
 }
 
