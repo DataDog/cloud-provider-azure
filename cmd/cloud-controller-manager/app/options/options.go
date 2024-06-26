@@ -45,6 +45,7 @@ import (
 	"k8s.io/controller-manager/pkg/clientbuilder"
 	"k8s.io/klog/v2"
 
+	nodeconfig "k8s.io/cloud-provider/controllers/node/config"
 	cloudcontrollerconfig "sigs.k8s.io/cloud-provider-azure/cmd/cloud-controller-manager/app/config"
 	"sigs.k8s.io/cloud-provider-azure/pkg/consts"
 
@@ -67,6 +68,7 @@ type CloudControllerManagerOptions struct {
 	KubeCloudShared    *cpoptions.KubeCloudSharedOptions
 	ServiceController  *cpoptions.ServiceControllerOptions
 	NodeIPAMController *NodeIPAMControllerOptions
+	NodeController     *cpoptions.NodeControllerOptions
 
 	SecureServing  *apiserveroptions.SecureServingOptionsWithLoopback
 	Authentication *apiserveroptions.DelegatingAuthenticationOptions
@@ -94,7 +96,12 @@ func NewCloudControllerManagerOptions() (*CloudControllerManagerOptions, error) 
 		ServiceController: &cpoptions.ServiceControllerOptions{
 			ServiceControllerConfiguration: &componentConfig.ServiceController,
 		},
-		NodeIPAMController:        defaultNodeIPAMControllerOptions(),
+		NodeIPAMController: defaultNodeIPAMControllerOptions(),
+		NodeController: &cpoptions.NodeControllerOptions{
+			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
+				ConcurrentNodeSyncs: 1,
+			},
+		},
 		SecureServing:             apiserveroptions.NewSecureServingOptions().WithLoopback(),
 		Authentication:            apiserveroptions.NewDelegatingAuthenticationOptions(),
 		Authorization:             apiserveroptions.NewDelegatingAuthorizationOptions(),

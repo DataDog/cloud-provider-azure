@@ -29,12 +29,14 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 	apiserveroptions "k8s.io/apiserver/pkg/server/options"
 	cpconfig "k8s.io/cloud-provider/config"
+	nodeconfig "k8s.io/cloud-provider/controllers/node/config"
 	serviceconfig "k8s.io/cloud-provider/controllers/service/config"
 	"k8s.io/cloud-provider/names"
 	cpoptions "k8s.io/cloud-provider/options"
 	componentbaseconfig "k8s.io/component-base/config"
 	kubectrlmgrconfig "k8s.io/controller-manager/config"
 	cmoptions "k8s.io/controller-manager/options"
+
 	"k8s.io/controller-manager/pkg/leadermigration/options"
 
 	"sigs.k8s.io/cloud-provider-azure/pkg/consts"
@@ -99,6 +101,11 @@ func TestDefaultFlags(t *testing.T) {
 		NodeIPAMController: &NodeIPAMControllerOptions{
 			NodeIPAMControllerConfiguration: &config.NodeIPAMControllerConfiguration{
 				NodeCIDRMaskSize: consts.DefaultNodeCIDRMaskSize,
+			},
+		},
+		NodeController: &cpoptions.NodeControllerOptions{
+			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
+				ConcurrentNodeSyncs: 1,
 			},
 		},
 		SecureServing: (&apiserveroptions.SecureServingOptions{
@@ -244,6 +251,11 @@ func TestAddFlags(t *testing.T) {
 		NodeIPAMController: &NodeIPAMControllerOptions{
 			NodeIPAMControllerConfiguration: &config.NodeIPAMControllerConfiguration{
 				NodeCIDRMaskSize: consts.DefaultNodeCIDRMaskSize,
+			},
+		},
+		NodeController: &cpoptions.NodeControllerOptions{
+			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
+				ConcurrentNodeSyncs: 1,
 			},
 		},
 		SecureServing: (&apiserveroptions.SecureServingOptions{
