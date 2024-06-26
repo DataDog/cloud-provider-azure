@@ -45,7 +45,6 @@ import (
 	"k8s.io/controller-manager/pkg/clientbuilder"
 	"k8s.io/klog/v2"
 
-	nodeconfig "k8s.io/cloud-provider/controllers/node/config"
 	cloudcontrollerconfig "sigs.k8s.io/cloud-provider-azure/cmd/cloud-controller-manager/app/config"
 	"sigs.k8s.io/cloud-provider-azure/pkg/consts"
 
@@ -98,9 +97,7 @@ func NewCloudControllerManagerOptions() (*CloudControllerManagerOptions, error) 
 		},
 		NodeIPAMController: defaultNodeIPAMControllerOptions(),
 		NodeController: &cpoptions.NodeControllerOptions{
-			NodeControllerConfiguration: &nodeconfig.NodeControllerConfiguration{
-				ConcurrentNodeSyncs: int32(2),
-			},
+			NodeControllerConfiguration: &componentConfig.NodeController,
 		},
 		SecureServing:             apiserveroptions.NewSecureServingOptions().WithLoopback(),
 		Authentication:            apiserveroptions.NewDelegatingAuthenticationOptions(),
@@ -144,6 +141,7 @@ func (o *CloudControllerManagerOptions) Flags(allControllers, disabledByDefaultC
 	o.Generic.AddFlags(&fss, allControllers, disabledByDefaultControllers, names.CCMControllerAliases())
 	o.KubeCloudShared.AddFlags(fss.FlagSet("generic"))
 	o.ServiceController.AddFlags(fss.FlagSet("service controller"))
+	o.NodeController.AddFlags(fss.FlagSet("node controller"))
 	o.NodeIPAMController.AddFlags(fss.FlagSet("node ipam controller"))
 
 	o.SecureServing.AddFlags(fss.FlagSet("secure serving"))
@@ -249,6 +247,7 @@ func (o *CloudControllerManagerOptions) Validate(allControllers, disabledByDefau
 	errors = append(errors, o.KubeCloudShared.Validate()...)
 	errors = append(errors, o.ServiceController.Validate()...)
 	errors = append(errors, o.NodeIPAMController.Validate()...)
+	errors = append(errors, o.NodeController.Validate()...)
 	errors = append(errors, o.SecureServing.Validate()...)
 	errors = append(errors, o.Authentication.Validate()...)
 	errors = append(errors, o.Authorization.Validate()...)
