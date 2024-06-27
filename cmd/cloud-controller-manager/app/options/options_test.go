@@ -36,7 +36,6 @@ import (
 	componentbaseconfig "k8s.io/component-base/config"
 	kubectrlmgrconfig "k8s.io/controller-manager/config"
 	cmoptions "k8s.io/controller-manager/options"
-
 	"k8s.io/controller-manager/pkg/leadermigration/options"
 
 	"sigs.k8s.io/cloud-provider-azure/pkg/consts"

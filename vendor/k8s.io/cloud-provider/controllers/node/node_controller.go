@@ -251,6 +251,7 @@ func (cnc *CloudNodeController) syncHandler(key string) error {
 		utilruntime.HandleError(fmt.Errorf("invalid resource key: %s", key))
 		return nil
 	}
+
 	return cnc.syncNode(context.TODO(), name)
 }
 

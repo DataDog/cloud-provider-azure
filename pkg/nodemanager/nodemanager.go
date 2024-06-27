@@ -367,6 +367,7 @@ func (cnc *CloudNodeController) AddCloudNode(ctx context.Context, obj interface{
 
 // This processes nodes that were added into the cluster, and cloud initialize them if appropriate
 func (cnc *CloudNodeController) initializeNode(ctx context.Context, node *v1.Node) {
+	klog.Infof("Initializing node %s with cloud provider", node.Name)
 	curNode, err := cnc.kubeClient.CoreV1().Nodes().Get(ctx, node.Name, metav1.GetOptions{})
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("failed to get node %s: %w", node.Name, err))
