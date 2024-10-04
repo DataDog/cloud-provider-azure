@@ -3,6 +3,7 @@ name: Code Lint
 on:
   workflow_dispatch:
   push:
+    branches: [ master, 'release-**' ]
   pull_request:
 
 permissions:
@@ -16,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@0d381219ddf674d61a7572ddd19d7941e271515c # v2.9.0
+        uses: step-security/harden-runner@5c7944e73c4c2a096b17a9cb74d65b6c2bbafbde # v2.9.1
         with:
           egress-policy: audit
       - name: Checkout
@@ -32,3 +33,5 @@ jobs:
           # Optional: version of golangci-lint to use in form of v1.2 or v1.2.3 or `latest` to use the latest version
           version: v1.55
           args: -v
+          install-mode: "goinstall"
+
