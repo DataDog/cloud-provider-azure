@@ -70,6 +70,7 @@ type CloudControllerManagerOptions struct {
 	NodeLifecycleController *cpoptions.NodeLifecycleControllerOptions
 	ServiceController       *cpoptions.ServiceControllerOptions
 	NodeIPAMController      *NodeIPAMControllerOptions
+	NodeController          *cpoptions.NodeControllerOptions
 
 	SecureServing  *apiserveroptions.SecureServingOptionsWithLoopback
 	Authentication *apiserveroptions.DelegatingAuthenticationOptions
@@ -103,7 +104,10 @@ func NewCloudControllerManagerOptions() (*CloudControllerManagerOptions, error) 
 		ServiceController: &cpoptions.ServiceControllerOptions{
 			ServiceControllerConfiguration: &componentConfig.ServiceController,
 		},
-		NodeIPAMController:        defaultNodeIPAMControllerOptions(),
+		NodeIPAMController: defaultNodeIPAMControllerOptions(),
+		NodeController: &cpoptions.NodeControllerOptions{
+			NodeControllerConfiguration: &componentConfig.NodeController,
+		},
 		SecureServing:             apiserveroptions.NewSecureServingOptions().WithLoopback(),
 		Authentication:            apiserveroptions.NewDelegatingAuthenticationOptions(),
 		Authorization:             apiserveroptions.NewDelegatingAuthorizationOptions(),
@@ -147,6 +151,7 @@ func (o *CloudControllerManagerOptions) Flags(allControllers, disabledByDefaultC
 	o.KubeCloudShared.AddFlags(fss.FlagSet("generic"))
 	o.NodeLifecycleController.AddFlags(fss.FlagSet("node lifecycle controller"))
 	o.ServiceController.AddFlags(fss.FlagSet("service controller"))
+	o.NodeController.AddFlags(fss.FlagSet("node controller"))
 	o.NodeIPAMController.AddFlags(fss.FlagSet("node ipam controller"))
 
 	o.SecureServing.AddFlags(fss.FlagSet("secure serving"))
@@ -189,6 +194,9 @@ func (o *CloudControllerManagerOptions) ApplyTo(
 		return err
 	}
 	if err = o.NodeIPAMController.ApplyTo(&c.NodeIPAMControllerConfig); err != nil {
+		return err
+	}
+	if err = o.NodeController.ApplyTo(&c.ComponentConfig.NodeController); err != nil {
 		return err
 	}
 	if err = o.SecureServing.ApplyTo(&c.SecureServing, &c.LoopbackClientConfig); err != nil {
@@ -265,6 +273,7 @@ func (o *CloudControllerManagerOptions) Validate(allControllers, disabledByDefau
 	errors = append(errors, o.NodeLifecycleController.Validate()...)
 	errors = append(errors, o.ServiceController.Validate()...)
 	errors = append(errors, o.NodeIPAMController.Validate()...)
+	errors = append(errors, o.NodeController.Validate()...)
 	errors = append(errors, o.SecureServing.Validate()...)
 	errors = append(errors, o.Authentication.Validate()...)
 	errors = append(errors, o.Authorization.Validate()...)
