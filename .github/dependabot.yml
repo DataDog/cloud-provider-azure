@@ -18,10 +18,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: "gomod"
     directory: "/health-probe-proxy"
     open-pull-requests-limit: 1
@@ -40,10 +40,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: "gomod"
     directory: "/kubetest2-aks"
     open-pull-requests-limit: 1
@@ -58,6 +58,7 @@ updates:
       - "kind/testing"
       - "lgtm"
       - "approved"
+
   - package-ecosystem: "gomod"
     directory: "/pkg/azclient"
     open-pull-requests-limit: 1
@@ -72,6 +73,7 @@ updates:
       - "kind/testing"
       - "lgtm"
       - "approved"
+
   - package-ecosystem: gomod
     directory: /pkg/azclient/client-gen
     schedule:
@@ -85,6 +87,7 @@ updates:
       - "kind/cleanup"
       - "lgtm"
       - "approved"
+
   - package-ecosystem: gomod
     directory: /pkg/azclient/configloader
     schedule:
@@ -102,10 +105,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: gomod
     directory: /pkg/azclient/trace
     schedule:
@@ -119,6 +122,7 @@ updates:
       - "kind/cleanup"
       - "lgtm"
       - "approved"
+
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
@@ -145,6 +149,7 @@ updates:
       - "kind/cleanup"
       - "lgtm"
       - "approved"
+  
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -158,6 +163,7 @@ updates:
       - "kind/testing"
       - "lgtm"
       - "approved"
+
   - package-ecosystem: "gomod"
     directory: "/"
     open-pull-requests-limit: 1
@@ -181,10 +187,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -238,10 +244,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -295,10 +301,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -352,10 +358,10 @@ updates:
       k8s:
         applies-to: version-updates
         patterns:
-          - "k8s.io*"
+        - "k8s.io*"
         update-types:
-          - "patch"
-          - "minor"
+        - "patch"
+        - "minor"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
@@ -386,6 +392,7 @@ updates:
       - "lgtm"
       - "approved"
       - "release-1.28"
+
   - package-ecosystem: gomod
     directory: /
     schedule:
@@ -400,6 +407,7 @@ updates:
       - "kind/cleanup"
       - "lgtm"
       - "approved"
+
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -414,4 +422,3 @@ updates:
       - "kind/cleanup"
       - "lgtm"
       - "approved"
-    open-pull-requests-limit: 0
