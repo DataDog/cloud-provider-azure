@@ -22,7 +22,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/resources/armresources"
-	"k8s.io/klog"
+	"k8s.io/klog/v2"
 )
 
 func (d *deployer) deleteResourceGroup(subscriptionID string, credential azcore.TokenCredential) error {
