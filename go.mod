@@ -2,6 +2,8 @@ module sigs.k8s.io/cloud-provider-azure
 
 go 1.23.1
 
+toolchain go1.26.2
+
 require (
 	github.com/Azure/azure-kusto-go v0.16.1
 	github.com/Azure/azure-sdk-for-go v68.0.0+incompatible
