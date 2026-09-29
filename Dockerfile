@@ -14,26 +14,36 @@
 
 # syntax=docker/dockerfile:1
 
-FROM --platform=linux/amd64 mcr.microsoft.com/oss/go/microsoft/golang:1.26.5-1-bookworm@sha256:68db2defa204890b431c331ef5937f5d98408bd1a9649293da735d3fe3a9d56a AS builder
+################################################################################
+##                               BUILD ARGS                                   ##
+################################################################################
+
+# Base docker image (like distroless)
+ARG BASE_IMAGE
+# This build arg allows the specification of a custom Golang image.
+ARG BUILDER_IMAGE
+
+FROM ${BUILDER_IMAGE} AS builder
 
 ARG ENABLE_GIT_COMMAND=true
-ARG GOEXPERIMENT
-ARG ARCH=amd64
-ENV GOEXPERIMENT=${GOEXPERIMENT}
-
-RUN if [ "$ARCH" = "arm64" ] ; then \
-    apt-get update && apt-get install -y gcc-aarch64-linux-gnu ; \
-    elif [ "$ARCH" = "arm" ] ; then \
-    apt-get update && apt-get install -y gcc-arm-linux-gnueabihf ; \
-    fi
+ARG TARGETOS
+ARG TARGETARCH
+ARG VERSION
 
 WORKDIR /go/src/sigs.k8s.io/cloud-provider-azure
-COPY . .
+COPY go.mod go.sum ./
+COPY cmd/ cmd/
+COPY pkg/ pkg/
+COPY vendor/ vendor/
 
-# Cache the go build into the the Go's compiler cache folder so we take benefits of compiler caching across docker build calls
-RUN --mount=type=cache,target=/root/.cache/go-build \
-    make bin/azure-cloud-controller-manager ENABLE_GIT_COMMAND=${ENABLE_GIT_COMMAND} ARCH=${ARCH}
+RUN  CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
+    -trimpath \
+    # Taken from the "make .pkg_config" output so the --version command works
+    -ldflags="-w -s -X k8s.io/component-base/version.gitVersion=$VERSION -X sigs.k8s.io/cloud-provider-azure/pkg/version.gitVersion=$VERSION -X k8s.io/client-go/pkg/version.gitVersion=$VERSION" \
+    -o=azure-cloud-controller-manager \
+    $(cat pkg/.pkg_config) \
+    ./cmd/cloud-controller-manager
 
-FROM gcr.io/distroless/base:latest@sha256:57c1e4c72feb5925c4763ae4f6bd2013ad3854f57eff5b60dd9acb1ce0abc66e
-COPY --from=builder /go/src/sigs.k8s.io/cloud-provider-azure/bin/azure-cloud-controller-manager /usr/local/bin/cloud-controller-manager
-ENTRYPOINT [ "/usr/local/bin/cloud-controller-manager" ]
+FROM ${BASE_IMAGE}
+COPY --from=builder /go/src/sigs.k8s.io/cloud-provider-azure/azure-cloud-controller-manager /bin/azure-cloud-controller-manager
+ENTRYPOINT [ "/bin/azure-cloud-controller-manager" ]
